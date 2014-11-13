@@ -39,19 +39,23 @@ module.exports = function (handlebars, styleguide) {
      * Loop over each section root, i.e. each section only one level deep.
      */
     handlebars.registerHelper('eachRoot', function(options) {
-        var buffer = '',
+        var buffer = [],
             sections,
             i, l;
 
-        sections = styleguide.section('x');
+        sections = styleguide.data.sections;
         if (!sections) return '';
 
         l = sections.length;
         for (i = 0; i < l; i += 1) {
-            buffer += options.fn(sections[i].data);
+            var depth = sections[i].data.reference.split('.')[0];
+
+            if (buffer.length < depth) {
+                buffer.push('<li><a href="section-' + depth + '.html">' + depth + ': ' + sections[i].data.header + '</a></li>');
+            }
         }
 
-        return buffer;
+        return buffer.toString().replace(/,/g, '');
     });
 
     /**
